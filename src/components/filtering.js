@@ -1,30 +1,35 @@
-import { createComparison, defaultRules } from "../lib/compare.js";
-
-const compare = createComparison(defaultRules);
-
 export function initFiltering(elements, indexes) {
-    // заполняем dropdown'ы
-    Object.keys(indexes).forEach((key) => {
-        const select = elements[key];
 
-        if (!select) return;
-
-        select.append(
-            ...Object.values(indexes[key]).map(name => new Option(name, name))
+    Object.keys(indexes).forEach((name) => {
+        elements[name].append(
+            ...Object.values(indexes[name]).map(v => new Option(v, v))
         );
     });
 
     return (data, state, action) => {
-        // очистка фильтра
+
+        // 🔥 НОРМАЛИЗАЦИЯ ЧИСЕЛ (ВАЖНО)
+        const normalizedState = {
+            ...state,
+            totalFrom: state.totalFrom !== '' && state.totalFrom != null
+                ? Number(state.totalFrom)
+                : '',
+            totalTo: state.totalTo !== '' && state.totalTo != null
+                ? Number(state.totalTo)
+                : ''
+        };
+
         if (action && action.name === 'clear') {
             const input = action.parentElement.querySelector('input');
 
             if (input) input.value = '';
 
-            const field = action.dataset.field;
-            if (field) state[field] = '';
+            if (action.dataset.field) {
+                normalizedState[action.dataset.field] = '';
+                state[action.dataset.field] = '';
+            }
         }
 
-        return data.filter(row => compare(row, state));
+        return data.filter(row => compare(row, normalizedState));
     };
 }
