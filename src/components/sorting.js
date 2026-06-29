@@ -7,6 +7,7 @@ export function initSorting(columns) {
 
         if (action && action.name === 'sort') {
             // @todo: #3.1 — запомнить выбранный режим сортировки
+<<<<<<< HEAD
             action.dataset.value = sortMap[action.dataset.value];
             field = action.dataset.field;
             order = action.dataset.value;
@@ -25,6 +26,12 @@ export function initSorting(columns) {
                     order = column.dataset.value;
                 }
             });
+=======
+
+            // @todo: #3.2 — сбросить сортировки остальных колонок
+        } else {
+            // @todo: #3.3 — получить выбранный режим сортировки
+>>>>>>> 6796e4fab5089f886ce0ac66c879041c882d5182
         }
 
         return sortCollection(data, field, order);

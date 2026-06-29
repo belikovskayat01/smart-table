@@ -1,5 +1,6 @@
 import {rules, createComparison} from "../lib/compare.js";
 
+<<<<<<< HEAD
 export function initSearching() {
 
     return (data, state) => {
@@ -14,4 +15,14 @@ export function initSearching() {
             );
         });
     };
+=======
+
+export function initSearching(searchField) {
+    // @todo: #5.1 — настроить компаратор
+
+    return (data, state, action) => {
+        // @todo: #5.2 — применить компаратор
+        return data;
+    }
+>>>>>>> 6796e4fab5089f886ce0ac66c879041c882d5182
 }
