@@ -86,9 +86,7 @@ const applyFiltering = initFiltering(
     }
 );
 
-const applySearching = initSearching(sampleTable.search.elements, {
-    searchField: 'search'
-});
+const applySearching = initSearching('search');
 
 const appRoot = document.querySelector('#app');
 appRoot.appendChild(sampleTable.container);
