@@ -1,21 +1,21 @@
 import {rules, createComparison} from "../lib/compare.js";
 
-export function initSearching() {
-    return (data, state) => {
-        const query = state.search;
 
-        if (!query) return data;
+export function initSearching(searchField) {
+    // @todo: #5.1 — настроить компаратор
+    const compare = createComparison(
+        ['skipEmptyTargetValues'],
+        [
+            rules.searchMultipleFields(
+                searchField,
+                ['date', 'customer', 'seller'],
+                false
+            )
+        ]
+    );
 
-        return data.filter(row => {
-            const values = [
-                row.date,
-                row.customer,
-                row.seller
-            ];
-
-            return values.some(v =>
-                String(v).toLowerCase().includes(query.toLowerCase())
-            );
-        });
-    };
+    return (data, state, action) => {
+        // @todo: #5.2 — применить компаратор
+        return data.filter(row => compare(row, state));
+    }
 }

@@ -1,35 +1,36 @@
-export function initFiltering(elements, indexes) {
+import {createComparison, defaultRules} from "../lib/compare.js";
 
-    Object.keys(indexes).forEach((name) => {
-        elements[name].append(
-            ...Object.values(indexes[name]).map(v => new Option(v, v))
+// @todo: #4.3 — настроить компаратор
+const compare = createComparison(defaultRules);
+
+export function initFiltering(elements, indexes) {
+    // @todo: #4.1 — заполнить выпадающие списки опциями
+   Object.keys(indexes)
+    .forEach(elementName => {
+
+        elements[elementName].append(
+
+            ...Object.values(indexes[elementName]).map(name => {
+
+                return new Option(name, name);
+
+            })
+
         );
+
     });
 
     return (data, state, action) => {
-
-        // 🔥 НОРМАЛИЗАЦИЯ ЧИСЕЛ (ВАЖНО)
-        const normalizedState = {
-            ...state,
-            totalFrom: state.totalFrom !== '' && state.totalFrom != null
-                ? Number(state.totalFrom)
-                : '',
-            totalTo: state.totalTo !== '' && state.totalTo != null
-                ? Number(state.totalTo)
-                : ''
-        };
-
+        // @todo: #4.2 — обработать очистку поля
         if (action && action.name === 'clear') {
             const input = action.parentElement.querySelector('input');
 
-            if (input) input.value = '';
+            input.value = '';
 
-            if (action.dataset.field) {
-                normalizedState[action.dataset.field] = '';
-                state[action.dataset.field] = '';
-            }
+            state[action.dataset.field] = '';
         }
 
-        return data.filter(row => compare(row, normalizedState));
-    };
+        // @todo: #4.5 — отфильтровать данные используя компаратор
+        return data.filter(row => compare(row, state));
+    }
 }
