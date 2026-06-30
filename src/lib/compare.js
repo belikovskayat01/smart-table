@@ -54,12 +54,19 @@ const rules = {
     // Возвращать неудачу, если исходное значение пусто, а целевое нет
     // Подробнее: это правило проверяет обязательные поля,
     // требующие непустых значений
-    failOnEmptySource: () => (key, sourceValue, targetValue) => {
-        if (isEmpty(sourceValue)) {
-            return { result: false };
-        }
+ failOnEmptySource: () => (key, sourceValue, targetValue) => {
+
+    // Для фильтра диапазона это правило не применяется
+    if (key === 'totalFrom' || key === 'totalTo') {
         return { continue: true };
-    },
+    }
+
+    if (isEmpty(sourceValue)) {
+        return { result: false };
+    }
+
+    return { continue: true };
+},
 
     // Обрабатывать массив как диапазон [от, до]
     // Подробнее: это позволяет проверить, попадает ли число
