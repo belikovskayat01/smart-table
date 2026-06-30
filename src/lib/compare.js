@@ -27,12 +27,19 @@ const rules = {
     // Пропускать поля, которых нет в исходном объекте
     // Подробнее: это помогает избежать ошибок при сравнении, когда целевой объект
     // содержит поля, которых нет в исходном объекте
-    skipNonExistentSourceFields: (source) => (key, sourceValue, targetValue) => {
-        if (!Object.prototype.hasOwnProperty.call(source, key)) {
-            return { skip: true };
-        }
-        return { skip: false };
-    },
+    skipNonExistentSourceFields: (source) => (key) => {
+
+    // диапазон суммы обрабатывается отдельным правилом
+    if (key === 'totalFrom' || key === 'totalTo') {
+        return { continue: true };
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(source, key)) {
+        return { skip: true };
+    }
+
+    return { continue: true };
+},
 
     // Пропускать пустые значения в целевом объекте
     // Подробнее: это полезно, когда вы не хотите сравнивать поля,
@@ -57,23 +64,30 @@ const rules = {
     // Обрабатывать массив как диапазон [от, до]
     // Подробнее: это позволяет проверить, попадает ли число
     // в заданный диапазон. Например, [10, 20] означает от 10 до 20 включительно
-    arrayAsRange: () => (key, sourceValue, targetValue) => {
-        if (Array.isArray(targetValue)) {
-            if (targetValue.length === 2) {
-                const [from, to] = targetValue;
+    arrayAsRange: () => (key, sourceValue, targetValue, source, target) => {
 
-                if (!isEmpty(from) && sourceValue < from) {
-                    return { result: false };
-                }
-                if (!isEmpty(to) && sourceValue > to) {
-                    return { result: false };
-                }
-                return { result: true };
-            }
-            return { result: false };
+    if (key === 'totalFrom') {
+        if (isEmpty(targetValue)) {
+            return { skip: true };
         }
-        return { continue: true };
-    },
+
+        return {
+            result: Number(source.total) >= parseFloat(targetValue)
+        };
+    }
+
+    if (key === 'totalTo') {
+        if (isEmpty(targetValue)) {
+            return { skip: true };
+        }
+
+        return {
+            result: Number(source.total) <= parseFloat(targetValue)
+        };
+    }
+
+    return { continue: true };
+},
 
     // Сравнение на включение подстроки
     // Подробнее: проверяет, содержит ли строка другую строку
